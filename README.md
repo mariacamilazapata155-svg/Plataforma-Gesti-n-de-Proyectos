@@ -157,13 +157,13 @@ http://localhost:8000/redoc
 Todas las pruebas
 
 ```bash
-pytest
+python -m pytest
 ```
 
 Modo detallado
 
 ```bash
-pytest -v
+python -m pytest -v
 ```
 
 Cobertura
