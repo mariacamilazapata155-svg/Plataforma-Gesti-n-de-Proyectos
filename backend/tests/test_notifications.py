@@ -4,6 +4,7 @@ from conftest import auth_headers
 def test_user_can_list_own_notifications(
     client,
     users,
+    notification_fixture,
 ):
     response = client.get(
         "/notifications/",
@@ -97,6 +98,7 @@ def test_other_user_cannot_mark_notification_as_read(
 def test_user_can_mark_all_notifications_as_read(
     client,
     users,
+    notification_fixture,
 ):
     response = client.put(
         "/notifications/read-all",
