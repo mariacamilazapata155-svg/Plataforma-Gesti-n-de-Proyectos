@@ -3,56 +3,36 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
-
-from app.schemas.board_schema import (
-    BoardCreate,
-    BoardUpdate,
-    BoardResponse
-)
-
+from app.models.user import User
+from app.schemas.board_schema import BoardCreate, BoardResponse, BoardUpdate
 from app.services.board_service import (
     create_new_board,
-    get_board_by_id,
     get_all_boards,
+    get_board_by_id,
     get_boards_of_project,
-    update_existing_board,
     remove_board,
+    update_existing_board,
 )
 
-from app.models.user import User
-from app.core.dependencies import get_current_user
+router = APIRouter(prefix="/boards", tags=["Boards"])
 
 
-router = APIRouter(
-    prefix="/boards",
-    tags=["Boards"]
-)
-
-
-@router.post(
-    "/",
-    response_model=BoardResponse,
-    status_code=status.HTTP_201_CREATED
-)
+@router.post("/", response_model=BoardResponse, status_code=status.HTTP_201_CREATED)
 def create_board(
     board: BoardCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     try:
         return create_new_board(
-            db=db,
-            board=board,
-            owner_id=current_user.id,
-            current_user=current_user
+            db=db, board=board, owner_id=current_user.id, current_user=current_user
         )
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 
 @router.get("/", response_model=List[BoardResponse])
 def read_boards(
@@ -62,14 +42,11 @@ def read_boards(
     return get_all_boards(db, current_user)
 
 
-@router.get(
-    "/{board_id}",
-    response_model=BoardResponse
-)
+@router.get("/{board_id}", response_model=BoardResponse)
 def read_board(
     board_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     board = get_board_by_id(
         db=db,
@@ -79,16 +56,13 @@ def read_board(
 
     if board is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Board not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Board not found."
         )
 
     return board
 
-@router.get(
-    "/project/{project_id}",
-    response_model=List[BoardResponse]
-)
+
+@router.get("/project/{project_id}", response_model=List[BoardResponse])
 def read_boards_by_project(
     project_id: int,
     db: Session = Depends(get_db),
@@ -101,10 +75,7 @@ def read_boards_by_project(
     )
 
 
-@router.put(
-    "/{board_id}",
-    response_model=BoardResponse
-)
+@router.put("/{board_id}", response_model=BoardResponse)
 def update_board(
     board_id: int,
     board: BoardUpdate,
@@ -120,8 +91,7 @@ def update_board(
 
     if updated_board is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Board not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Board not found."
         )
 
     return updated_board
@@ -144,8 +114,7 @@ def delete_board(
 
     if deleted is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Board not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Board not found."
         )
 
     return None

@@ -30,17 +30,11 @@ def get_projects_for_user(db: Session, user_id: int):
     )
 
 
-def create_project(
-    db: Session,
-    project: ProjectCreate,
-    owner_id: int
-):
+def create_project(db: Session, project: ProjectCreate, owner_id: int):
     """Crea un nuevo proyecto."""
 
     db_project = Project(
-        title=project.title,
-        description=project.description,
-        owner_id=owner_id
+        title=project.title, description=project.description, owner_id=owner_id
     )
 
     db.add(db_project)
@@ -50,11 +44,7 @@ def create_project(
     return db_project
 
 
-def update_project(
-    db: Session,
-    project_id: int,
-    project: ProjectUpdate
-):
+def update_project(db: Session, project_id: int, project: ProjectUpdate):
     """Actualiza un proyecto."""
 
     db_project = get_project(db, project_id)

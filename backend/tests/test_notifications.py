@@ -1,12 +1,9 @@
-from app.enums.notification_type import NotificationType
-
 from conftest import auth_headers
 
 
 def test_user_can_list_own_notifications(
     client,
     users,
-    notification_fixture,
 ):
     response = client.get(
         "/notifications/",
@@ -24,7 +21,6 @@ def test_user_can_list_own_notifications(
 def test_other_user_cannot_list_foreign_notifications(
     client,
     users,
-    notification_fixture,
 ):
     response = client.get(
         "/notifications/",
@@ -36,8 +32,7 @@ def test_other_user_cannot_list_foreign_notifications(
     data = response.json()
 
     assert all(
-        notification["recipient_id"] == users["owner"].id
-        for notification in data
+        notification["recipient_id"] == users["owner"].id for notification in data
     )
 
 
@@ -102,7 +97,6 @@ def test_other_user_cannot_mark_notification_as_read(
 def test_user_can_mark_all_notifications_as_read(
     client,
     users,
-    notification_fixture,
 ):
     response = client.put(
         "/notifications/read-all",
@@ -111,9 +105,7 @@ def test_user_can_mark_all_notifications_as_read(
 
     assert response.status_code == 200
 
-    assert response.json() == {
-        "message": "All notifications marked as read."
-    }
+    assert response.json() == {"message": "All notifications marked as read."}
 
 
 def test_recipient_can_delete_notification(

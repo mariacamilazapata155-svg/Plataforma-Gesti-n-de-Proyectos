@@ -1,39 +1,29 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
-
 from app.models.user import User
-
-from app.core.dependencies import (
-    get_current_user,
-)
-
 from app.schemas.project_member_schema import (
     ProjectMemberCreate,
-    ProjectMemberUpdate,
     ProjectMemberResponse,
+    ProjectMemberUpdate,
 )
-
 from app.services.project_member_service import (
     create_new_project_member,
     get_member_by_id,
     get_members_of_project,
-    update_existing_project_member,
     remove_project_member,
+    update_existing_project_member,
 )
 
 router = APIRouter(
     prefix="/project-members",
     tags=["Project Members"],
 )
+
 
 @router.post(
     "/projects/{project_id}",
@@ -59,7 +49,8 @@ def create_project_member(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
-    
+
+
 @router.get(
     "/projects/{project_id}",
     response_model=List[ProjectMemberResponse],
@@ -74,6 +65,7 @@ def read_project_members(
         project_id,
         current_user,
     )
+
 
 @router.get(
     "/{member_id}",
@@ -97,6 +89,7 @@ def read_project_member(
         )
 
     return member
+
 
 @router.put(
     "/{member_id}",
@@ -123,6 +116,7 @@ def update_project_member(
 
     return updated
 
+
 @router.delete(
     "/{member_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -145,4 +139,3 @@ def delete_project_member(
         )
 
     return None
-

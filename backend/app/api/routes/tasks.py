@@ -1,33 +1,21 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
-
-from app.schemas.task_schema import (
-    TaskCreate,
-    TaskUpdate,
-    TaskResponse,
-)
-
-from app.services.task_service import (
-    create_new_task,
-    get_task_by_id,
-    get_all_tasks,
-    get_tasks_of_board,
-    update_existing_task,
-    remove_task,
-    assign_task_to_user,
-)
-
-from app.models.user import User
 from app.core.dependencies import get_current_user
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.task_schema import TaskCreate, TaskResponse, TaskUpdate
+from app.services.task_service import (
+    assign_task_to_user,
+    create_new_task,
+    get_all_tasks,
+    get_task_by_id,
+    get_tasks_of_board,
+    remove_task,
+    update_existing_task,
+)
 
 router = APIRouter(
     prefix="/tasks",
@@ -158,6 +146,7 @@ def delete_task(
 
     return None
 
+
 @router.patch(
     "/{task_id}/assign/{user_id}",
     response_model=TaskResponse,
@@ -185,7 +174,8 @@ def assign_user_to_task(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
-    
+
+
 @router.patch(
     "/{task_id}/unassign",
     response_model=TaskResponse,
@@ -211,4 +201,4 @@ def unassign_task(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
-        )    
+        )

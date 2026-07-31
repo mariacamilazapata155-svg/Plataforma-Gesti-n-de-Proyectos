@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from app.enums.task import TaskStatus, TaskPriority
+from app.enums.task import TaskPriority, TaskStatus
 
 
 class TaskBase(BaseModel):

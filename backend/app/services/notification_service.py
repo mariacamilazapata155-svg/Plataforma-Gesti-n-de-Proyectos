@@ -2,17 +2,13 @@ from sqlalchemy.orm import Session
 
 from app.crud.crud_notification import (
     create_notification,
+    delete_notification,
     get_notification,
     get_notifications_by_user,
-    update_notification,
     mark_all_as_read,
-    delete_notification,
+    update_notification,
 )
-
-from app.schemas.notification_schema import (
-    NotificationCreate,
-    NotificationUpdate,
-)
+from app.schemas.notification_schema import NotificationCreate, NotificationUpdate
 
 
 def notify(

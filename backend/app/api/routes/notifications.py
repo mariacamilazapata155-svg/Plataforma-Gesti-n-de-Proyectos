@@ -1,31 +1,17 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
-
 from app.models.user import User
-
-from app.core.dependencies import (
-    get_current_user,
-)
-
-from app.schemas.notification_schema import (
-    NotificationResponse,
-)
-
+from app.schemas.notification_schema import NotificationResponse
 from app.services.notification_service import (
     get_notification_by_id,
     get_user_notifications,
-    mark_notification_as_read,
     mark_every_notification_as_read,
+    mark_notification_as_read,
     remove_notification,
 )
 
@@ -122,9 +108,7 @@ def mark_all_as_read(
         user_id=current_user.id,
     )
 
-    return {
-        "message": "All notifications marked as read."
-    }
+    return {"message": "All notifications marked as read."}
 
 
 @router.delete(

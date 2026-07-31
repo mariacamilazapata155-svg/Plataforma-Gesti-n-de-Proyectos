@@ -1,6 +1,6 @@
-from app.enums.task import TaskStatus
-
 from conftest import auth_headers
+
+from app.enums.task import TaskStatus
 
 
 def test_boards_require_authentication(client):
@@ -20,9 +20,7 @@ def test_user_only_sees_boards_from_its_projects(
     )
 
     assert response.status_code == 200
-    assert [
-        board["id"] for board in response.json()
-    ] == [
+    assert [board["id"] for board in response.json()] == [
         authorization_data["board"].id
     ]
 
@@ -78,9 +76,7 @@ def test_member_cannot_edit_or_delete_another_members_comment(
 ):
     comment_id = authorization_data["comment"].id
 
-    headers = auth_headers(
-        users["other_member"]
-    )
+    headers = auth_headers(users["other_member"])
 
     update_response = client.put(
         f"/comments/{comment_id}",
@@ -122,9 +118,7 @@ def test_outsider_cannot_read_project_resources(
     users,
     authorization_data,
 ):
-    headers = auth_headers(
-        users["outsider"]
-    )
+    headers = auth_headers(users["outsider"])
 
     project_response = client.get(
         f"/projects/{authorization_data['project'].id}",
@@ -157,24 +151,31 @@ def test_owner_can_access_every_project_resource(
     users,
     authorization_data,
 ):
-    headers = auth_headers(
-        users["owner"]
+    headers = auth_headers(users["owner"])
+
+    assert (
+        client.get(
+            f"/projects/{authorization_data['project'].id}",
+            headers=headers,
+        ).status_code
+        == 200
     )
 
-    assert client.get(
-        f"/projects/{authorization_data['project'].id}",
-        headers=headers,
-    ).status_code == 200
+    assert (
+        client.get(
+            f"/boards/{authorization_data['board'].id}",
+            headers=headers,
+        ).status_code
+        == 200
+    )
 
-    assert client.get(
-        f"/boards/{authorization_data['board'].id}",
-        headers=headers,
-    ).status_code == 200
-
-    assert client.get(
-        f"/tasks/{authorization_data['task'].id}",
-        headers=headers,
-    ).status_code == 200
+    assert (
+        client.get(
+            f"/tasks/{authorization_data['task'].id}",
+            headers=headers,
+        ).status_code
+        == 200
+    )
 
 
 def test_user_cannot_access_another_users_profile(

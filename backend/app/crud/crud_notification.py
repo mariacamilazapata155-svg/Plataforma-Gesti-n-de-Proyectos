@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.notification import Notification
-from app.schemas.notification_schema import (
-    NotificationCreate,
-    NotificationUpdate,
-)
+from app.schemas.notification_schema import NotificationCreate, NotificationUpdate
 
 
 def get_notification(
@@ -15,11 +12,7 @@ def get_notification(
     Obtiene una notificación por su ID.
     """
 
-    return (
-        db.query(Notification)
-        .filter(Notification.id == notification_id)
-        .first()
-    )
+    return db.query(Notification).filter(Notification.id == notification_id).first()
 
 
 def get_notifications_by_user(
@@ -47,9 +40,7 @@ def create_notification(
     Crea una nueva notificación.
     """
 
-    db_notification = Notification(
-        **notification.model_dump()
-    )
+    db_notification = Notification(**notification.model_dump())
 
     db.add(db_notification)
     db.commit()

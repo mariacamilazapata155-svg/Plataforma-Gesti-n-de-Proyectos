@@ -1,17 +1,13 @@
 from sqlalchemy.orm import Session
 
-from app.models.user import User
-
-from app.schemas.activity_log_schema import (
-    ActivityLogCreate,
-)
-
 from app.crud.crud_activity_log import (
     create_activity_log,
     get_activity_log,
     get_activity_logs_by_project,
     get_activity_logs_by_user,
 )
+from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogCreate
 
 
 def log_activity(

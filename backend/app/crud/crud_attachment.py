@@ -11,11 +11,7 @@ def get_attachment(
     Obtiene un archivo por su ID.
     """
 
-    return (
-        db.query(Attachment)
-        .filter(Attachment.id == attachment_id)
-        .first()
-    )
+    return db.query(Attachment).filter(Attachment.id == attachment_id).first()
 
 
 def get_attachments_by_task(
@@ -27,11 +23,7 @@ def get_attachments_by_task(
     de una tarea.
     """
 
-    return (
-        db.query(Attachment)
-        .filter(Attachment.task_id == task_id)
-        .all()
-    )
+    return db.query(Attachment).filter(Attachment.task_id == task_id).all()
 
 
 def create_attachment(

@@ -1,5 +1,3 @@
-import pytest
-
 from app.core.security import create_access_token
 from app.enums.project_role import ProjectRole
 
@@ -10,6 +8,7 @@ def auth_headers(user):
     return {
         "Authorization": f"Bearer {token}",
     }
+
 
 def test_owner_can_add_member(
     client,

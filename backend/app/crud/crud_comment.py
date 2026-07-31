@@ -1,31 +1,18 @@
 from sqlalchemy.orm import Session
 
 from app.models.comment import Comment
-from app.schemas.comment_schema import (
-    CommentCreate,
-    CommentUpdate,
-)
+from app.schemas.comment_schema import CommentCreate, CommentUpdate
 
 
-def get_comment(
-    db: Session,
-    comment_id: int
-):
+def get_comment(db: Session, comment_id: int):
     """
     Obtiene un comentario por su ID.
     """
 
-    return (
-        db.query(Comment)
-        .filter(Comment.id == comment_id)
-        .first()
-    )
+    return db.query(Comment).filter(Comment.id == comment_id).first()
 
 
-def get_comments_by_task(
-    db: Session,
-    task_id: int
-):
+def get_comments_by_task(db: Session, task_id: int):
     """
     Obtiene todos los comentarios
     de una tarea.
@@ -78,9 +65,7 @@ def update_comment(
     if not db_comment:
         return None
 
-    update_data = comment.model_dump(
-        exclude_unset=True
-    )
+    update_data = comment.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
         setattr(

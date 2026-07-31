@@ -1,10 +1,10 @@
-from .projects import router as projects_router
+from .activity_logs import router as activity_logs_router
+from .attachments import router as attachments_router
+from .auth import router as auth_router
 from .boards import router as boards_router
+from .comments import router as comments_router
+from .notifications import router as notifications_router
+from .project_members import router as project_members_router
+from .projects import router as projects_router
 from .tasks import router as tasks_router
 from .users import router as users_router
-from .auth import router as auth_router
-from .project_members import router as project_members_router
-from .comments import router as comments_router
-from .attachments import router as attachments_router
-from .activity_logs import router as activity_logs_router
-from .notifications import router as notifications_router

@@ -12,11 +12,7 @@ def get_activity_log(
     Obtiene una actividad por su ID.
     """
 
-    return (
-        db.query(ActivityLog)
-        .filter(ActivityLog.id == activity_id)
-        .first()
-    )
+    return db.query(ActivityLog).filter(ActivityLog.id == activity_id).first()
 
 
 def get_activity_logs_by_project(

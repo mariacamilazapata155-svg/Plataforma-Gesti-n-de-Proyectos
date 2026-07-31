@@ -37,7 +37,7 @@ def create_board(db: Session, board: BoardCreate, owner_id: int):
         title=board.title,
         description=board.description,
         project_id=board.project_id,
-        owner_id=owner_id
+        owner_id=owner_id,
     )
 
     db.add(db_board)
@@ -47,11 +47,7 @@ def create_board(db: Session, board: BoardCreate, owner_id: int):
     return db_board
 
 
-def update_board(
-    db: Session,
-    board_id: int,
-    board: BoardUpdate
-):
+def update_board(db: Session, board_id: int, board: BoardUpdate):
     """Actualiza un board."""
 
     db_board = get_board(db, board_id)

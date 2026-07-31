@@ -1,13 +1,9 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models.user import User
-
+from app.crud.crud_project_member import get_user_membership
 from app.enums.project_role import ProjectRole
-
-from app.crud.crud_project_member import (
-    get_user_membership,
-)
+from app.models.user import User
 
 
 def get_project_membership(

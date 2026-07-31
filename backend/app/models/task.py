@@ -1,17 +1,9 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    DateTime,
-    ForeignKey,
-    Enum,
-)
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base import Base
-from app.enums.task import TaskStatus, TaskPriority
+from app.enums.task import TaskPriority, TaskStatus
 
 
 class Task(Base):
@@ -23,71 +15,37 @@ class Task(Base):
 
     description = Column(Text, nullable=True)
 
-    status = Column(
-        Enum(TaskStatus),
-        nullable=False,
-        default=TaskStatus.TODO
-    )
+    status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.TODO)
 
-    priority = Column(
-        Enum(TaskPriority),
-        nullable=False,
-        default=TaskPriority.MEDIUM
-    )
+    priority = Column(Enum(TaskPriority), nullable=False, default=TaskPriority.MEDIUM)
 
     created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
-        nullable=False
+        nullable=False,
     )
 
-    due_date = Column(
-        DateTime(timezone=True),
-        nullable=True
-    )
+    due_date = Column(DateTime(timezone=True), nullable=True)
 
-    completed_at = Column(
-        DateTime(timezone=True),
-        nullable=True
-    )
+    completed_at = Column(DateTime(timezone=True), nullable=True)
 
-    board_id = Column(
-        Integer,
-        ForeignKey("boards.id"),
-        nullable=False
-    )
+    board_id = Column(Integer, ForeignKey("boards.id"), nullable=False)
 
-    assigned_to_id = Column(
-    Integer,
-    ForeignKey("users.id"),
-    nullable=True
-    )
+    assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
-    board = relationship(
-        "Board",
-        back_populates="tasks"
-    )
+    board = relationship("Board", back_populates="tasks")
 
-    assigned_to = relationship(
-    "User",
-    back_populates="assigned_tasks"
-    )
+    assigned_to = relationship("User", back_populates="assigned_tasks")
 
     comments = relationship(
-        "Comment",
-        back_populates="task",
-        cascade="all, delete-orphan"
+        "Comment", back_populates="task", cascade="all, delete-orphan"
     )
 
     attachments = relationship(
-        "Attachment",
-        back_populates="task",
-        cascade="all, delete-orphan"
+        "Attachment", back_populates="task", cascade="all, delete-orphan"
     )

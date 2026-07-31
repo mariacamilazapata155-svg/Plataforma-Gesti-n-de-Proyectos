@@ -1,41 +1,25 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    UploadFile,
-    File,
-    status,
-)
-
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
-
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
-
 from app.models.user import User
-
-from app.core.dependencies import (
-    get_current_user,
-)
-
-from app.schemas.attachment_schema import (
-    AttachmentResponse,
-)
-
+from app.schemas.attachment_schema import AttachmentResponse
 from app.services.attachment_service import (
-    upload_new_attachment,
     get_attachment_by_id,
     get_task_attachments,
     remove_attachment,
+    upload_new_attachment,
 )
 
 router = APIRouter(
     prefix="/attachments",
     tags=["Attachments"],
 )
+
 
 @router.post(
     "/tasks/{task_id}",
@@ -77,6 +61,7 @@ def read_task_attachments(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
+
 @router.get(
     "/{attachment_id}",
     response_model=AttachmentResponse,
@@ -99,6 +84,7 @@ def read_attachment(
         )
 
     return attachment
+
 
 @router.get(
     "/download/{attachment_id}",
@@ -125,6 +111,7 @@ def download_attachment(
         filename=attachment.original_filename,
         media_type=attachment.content_type,
     )
+
 
 @router.delete(
     "/{attachment_id}",
@@ -155,4 +142,3 @@ def delete_attachment(
         )
 
     return None
-

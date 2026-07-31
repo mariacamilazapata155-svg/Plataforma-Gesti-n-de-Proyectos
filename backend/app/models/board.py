@@ -1,11 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    ForeignKey,
-    Enum,
-)
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -21,49 +14,25 @@ class Board(Base):
     title = Column(String(100), nullable=False)
     description = Column(String(1000), nullable=True)
 
-    status = Column(
-        Enum(BoardStatus),
-        nullable=False,
-        default=BoardStatus.ACTIVE
-    )
+    status = Column(Enum(BoardStatus), nullable=False, default=BoardStatus.ACTIVE)
 
     created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
-        nullable=False
+        nullable=False,
     )
 
-    project_id = Column(
-        Integer,
-        ForeignKey("projects.id"),
-        nullable=False
-    )
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
 
-    owner_id = Column(
-    Integer,
-    ForeignKey("users.id"),
-    nullable=False
-    )
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    project = relationship(
-        "Project",
-        back_populates="boards"
-    )
+    project = relationship("Project", back_populates="boards")
 
-    owner = relationship(
-    "User",
-    back_populates="boards"
-    )
+    owner = relationship("User", back_populates="boards")
 
-    tasks = relationship(
-        "Task",
-        back_populates="board",
-        cascade="all, delete-orphan"
-    )
+    tasks = relationship("Task", back_populates="board", cascade="all, delete-orphan")

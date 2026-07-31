@@ -1,7 +1,5 @@
 import io
 
-from app.models.attachment import Attachment
-
 
 def test_owner_can_upload_attachment(
     client,

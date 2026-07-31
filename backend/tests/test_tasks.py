@@ -1,7 +1,6 @@
-from app.enums.task import TaskStatus
-
-
 from conftest import auth_headers
+
+from app.enums.task import TaskStatus
 
 
 def test_member_can_read_task(

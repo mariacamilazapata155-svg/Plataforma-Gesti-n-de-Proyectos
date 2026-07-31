@@ -1,66 +1,29 @@
 from sqlalchemy.orm import Session
 
+from app.core.permissions_project_member import require_project_role
+from app.crud.crud_board import get_board
+from app.crud.crud_project_member import get_user_membership
 from app.crud.crud_task import (
+    assign_task,
     create_task,
+    delete_task,
     get_task,
-    get_tasks,
     get_tasks_by_board,
     get_tasks_for_user,
     update_task,
-    delete_task,
 )
-
-from app.schemas.task_schema import (
-    TaskCreate,
-    TaskUpdate,
-)
-
-from app.models.user import User
-
-from app.crud.crud_board import get_board
 from app.crud.crud_user import get_user
-
-from app.crud.crud_project_member import (
-    get_user_membership,
-)
-
-from app.crud.crud_task import (
-    assign_task,
-)
-
-from app.core.permissions_project_member import (
-    require_project_role,
-)
-
-from app.enums.project_role import (
-    ProjectRole,
-)
-
-from app.services.activity_log_service import (
-    log_activity,
-)
-
-from app.schemas.activity_log_schema import (
-    ActivityLogCreate,
-)
-
-from app.enums.activity_action import (
-    ActivityAction,
-)
-
-from app.services.notification_service import (
-    notify,
-)
-
-from app.schemas.notification_schema import (
-    NotificationCreate,
-)
-
-from app.enums.notification_type import (
-    NotificationType,
-)
-
+from app.enums.activity_action import ActivityAction
+from app.enums.notification_type import NotificationType
+from app.enums.project_role import ProjectRole
 from app.enums.task import TaskStatus
+from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogCreate
+from app.schemas.notification_schema import NotificationCreate
+from app.schemas.task_schema import TaskCreate, TaskUpdate
+from app.services.activity_log_service import log_activity
+from app.services.notification_service import notify
+
 
 def create_new_task(
     db: Session,
@@ -78,9 +41,7 @@ def create_new_task(
     )
 
     if board is None:
-        raise ValueError(
-            "Board not found."
-        )
+        raise ValueError("Board not found.")
 
     require_project_role(
         db=db,
@@ -106,8 +67,7 @@ def create_new_task(
             entity_type="task",
             entity_id=new_task.id,
             description=(
-                f'{current_user.username} creó la tarea '
-                f'"{new_task.title}"'
+                f"{current_user.username} creó la tarea " f'"{new_task.title}"'
             ),
             project_id=board.project_id,
         ),
@@ -130,9 +90,9 @@ def create_new_task(
                     entity_type="task",
                     entity_id=new_task.id,
                     description=(
-                        f'{current_user.username} asignó la tarea '
+                        f"{current_user.username} asignó la tarea "
                         f'"{new_task.title}" a '
-                        f'{assigned_user.username}'
+                        f"{assigned_user.username}"
                     ),
                     project_id=board.project_id,
                 ),
@@ -146,7 +106,7 @@ def create_new_task(
                         type=NotificationType.TASK_ASSIGNED,
                         title="Nueva tarea asignada",
                         message=(
-                            f'{current_user.username} te asignó la tarea '
+                            f"{current_user.username} te asignó la tarea "
                             f'"{new_task.title}".'
                         ),
                         entity_type="task",
@@ -256,8 +216,7 @@ def update_existing_task(
             entity_type="task",
             entity_id=updated_task.id,
             description=(
-                f'{current_user.username} actualizó la tarea '
-                f'"{updated_task.title}"'
+                f"{current_user.username} actualizó la tarea " f'"{updated_task.title}"'
             ),
             project_id=board.project_id,
         ),
@@ -274,7 +233,7 @@ def update_existing_task(
                 type=NotificationType.TASK_UPDATED,
                 title="Tarea actualizada",
                 message=(
-                    f'{current_user.username} actualizó la tarea '
+                    f"{current_user.username} actualizó la tarea "
                     f'"{updated_task.title}".'
                 ),
                 entity_type="task",
@@ -305,9 +264,9 @@ def update_existing_task(
                     entity_type="task",
                     entity_id=updated_task.id,
                     description=(
-                        f'{current_user.username} asignó la tarea '
+                        f"{current_user.username} asignó la tarea "
                         f'"{updated_task.title}" a '
-                        f'{assigned_user.username}'
+                        f"{assigned_user.username}"
                     ),
                     project_id=board.project_id,
                 ),
@@ -321,7 +280,7 @@ def update_existing_task(
                         type=NotificationType.TASK_ASSIGNED,
                         title="Nueva tarea asignada",
                         message=(
-                            f'{current_user.username} te asignó la tarea '
+                            f"{current_user.username} te asignó la tarea "
                             f'"{updated_task.title}".'
                         ),
                         entity_type="task",
@@ -345,7 +304,7 @@ def update_existing_task(
                 entity_type="task",
                 entity_id=updated_task.id,
                 description=(
-                    f'{current_user.username} completó la tarea '
+                    f"{current_user.username} completó la tarea "
                     f'"{updated_task.title}"'
                 ),
                 project_id=board.project_id,
@@ -363,7 +322,7 @@ def update_existing_task(
                     type=NotificationType.TASK_COMPLETED,
                     title="Tarea completada",
                     message=(
-                        f'{current_user.username} marcó como completada '
+                        f"{current_user.username} marcó como completada "
                         f'"{updated_task.title}".'
                     ),
                     entity_type="task",
@@ -410,8 +369,7 @@ def remove_task(
             entity_type="task",
             entity_id=task.id,
             description=(
-                f'{current_user.username} eliminó la tarea '
-                f'"{task.title}"'
+                f"{current_user.username} eliminó la tarea " f'"{task.title}"'
             ),
             project_id=board.project_id,
         ),
@@ -421,6 +379,7 @@ def remove_task(
         db,
         task_id,
     )
+
 
 def assign_task_to_user(
     db: Session,
@@ -439,9 +398,7 @@ def assign_task_to_user(
     )
 
     if db_task is None:
-        raise ValueError(
-            "Task not found."
-        )
+        raise ValueError("Task not found.")
 
     board = get_board(
         db,
@@ -449,9 +406,7 @@ def assign_task_to_user(
     )
 
     if board is None:
-        raise ValueError(
-            "Board not found."
-        )
+        raise ValueError("Board not found.")
 
     require_project_role(
         db=db,
@@ -472,9 +427,7 @@ def assign_task_to_user(
         )
 
         if user is None:
-            raise ValueError(
-                "User not found."
-            )
+            raise ValueError("User not found.")
 
         membership = get_user_membership(
             db=db,
@@ -483,9 +436,7 @@ def assign_task_to_user(
         )
 
         if membership is None:
-            raise ValueError(
-                "The user is not a member of this project."
-            )
+            raise ValueError("The user is not a member of this project.")
 
     updated_task = assign_task(
         db=db,
@@ -508,9 +459,9 @@ def assign_task_to_user(
                 entity_type="task",
                 entity_id=updated_task.id,
                 description=(
-                    f'{current_user.username} asignó la tarea '
+                    f"{current_user.username} asignó la tarea "
                     f'"{updated_task.title}" a '
-                    f'{assigned_user.username}'
+                    f"{assigned_user.username}"
                 ),
                 project_id=board.project_id,
             ),
@@ -524,7 +475,7 @@ def assign_task_to_user(
                     type=NotificationType.TASK_ASSIGNED,
                     title="Nueva tarea asignada",
                     message=(
-                        f'{current_user.username} te asignó la tarea '
+                        f"{current_user.username} te asignó la tarea "
                         f'"{updated_task.title}".'
                     ),
                     entity_type="task",

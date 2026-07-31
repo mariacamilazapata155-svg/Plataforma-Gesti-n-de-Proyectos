@@ -1,34 +1,18 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
-
 from app.models.user import User
-
-from app.core.dependencies import (
-    get_current_user,
-)
-
-from app.schemas.comment_schema import (
-    CommentCreate,
-    CommentUpdate,
-    CommentResponse,
-)
-
+from app.schemas.comment_schema import CommentCreate, CommentResponse, CommentUpdate
 from app.services.comment_service import (
     create_new_comment,
     get_comment_by_id,
     get_comments_of_task,
-    update_existing_comment,
     remove_comment,
+    update_existing_comment,
 )
 
 router = APIRouter(

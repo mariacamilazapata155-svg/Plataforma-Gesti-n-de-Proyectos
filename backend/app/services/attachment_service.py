@@ -1,55 +1,27 @@
 import os
-import shutil
 import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from app.models.user import User
-from app.models.attachment import Attachment
-
+from app.core.permissions_project_member import require_project_role
 from app.crud.crud_attachment import (
     create_attachment,
+    delete_attachment,
     get_attachment,
     get_attachments_by_task,
-    delete_attachment,
 )
-
+from app.crud.crud_board import get_board
 from app.crud.crud_task import get_task
-
-from app.core.permissions_project_member import (
-    require_project_role,
-)
-
+from app.enums.activity_action import ActivityAction
+from app.enums.notification_type import NotificationType
 from app.enums.project_role import ProjectRole
-
-from app.services.activity_log_service import (
-    log_activity,
-)
-
-from app.schemas.activity_log_schema import (
-    ActivityLogCreate,
-)
-
-from app.enums.activity_action import (
-    ActivityAction,
-)
-
-from app.services.notification_service import (
-    notify,
-)
-
-from app.schemas.notification_schema import (
-    NotificationCreate,
-)
-
-from app.enums.notification_type import (
-    NotificationType,
-)
-
-from app.crud.crud_board import (
-    get_board,
-)
+from app.models.attachment import Attachment
+from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogCreate
+from app.schemas.notification_schema import NotificationCreate
+from app.services.activity_log_service import log_activity
+from app.services.notification_service import notify
 
 UPLOAD_DIRECTORY = "uploads/attachments"
 
@@ -67,6 +39,7 @@ ALLOWED_CONTENT_TYPES = {
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 }
 
+
 def upload_new_attachment(
     db: Session,
     task_id: int,
@@ -83,9 +56,7 @@ def upload_new_attachment(
     )
 
     if task is None:
-        raise ValueError(
-            "Task not found."
-        )
+        raise ValueError("Task not found.")
 
     require_project_role(
         db=db,
@@ -99,29 +70,21 @@ def upload_new_attachment(
     )
 
     if file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise ValueError(
-            "File type not allowed."
-        )
+        raise ValueError("File type not allowed.")
 
     contents = file.file.read()
 
     if len(contents) > MAX_FILE_SIZE:
-        raise ValueError(
-            "Maximum file size exceeded."
-        )
+        raise ValueError("Maximum file size exceeded.")
 
     os.makedirs(
         UPLOAD_DIRECTORY,
         exist_ok=True,
     )
 
-    extension = os.path.splitext(
-        file.filename
-    )[1]
+    extension = os.path.splitext(file.filename)[1]
 
-    generated_name = (
-        f"{uuid.uuid4()}{extension}"
-    )
+    generated_name = f"{uuid.uuid4()}{extension}"
 
     storage_path = os.path.join(
         UPLOAD_DIRECTORY,
@@ -162,7 +125,7 @@ def upload_new_attachment(
             entity_type="attachment",
             entity_id=new_attachment.id,
             description=(
-                f'{current_user.username} subió el archivo '
+                f"{current_user.username} subió el archivo "
                 f'"{new_attachment.original_filename}" '
                 f'a la tarea "{task.title}"'
             ),
@@ -170,17 +133,14 @@ def upload_new_attachment(
         ),
     )
 
-    if (
-        task.assigned_to_id is not None
-        and task.assigned_to_id != current_user.id
-    ):
+    if task.assigned_to_id is not None and task.assigned_to_id != current_user.id:
         notify(
             db=db,
             notification=NotificationCreate(
                 type=NotificationType.ATTACHMENT_UPLOADED,
                 title="Nuevo archivo adjunto",
                 message=(
-                    f'{current_user.username} subió el archivo '
+                    f"{current_user.username} subió el archivo "
                     f'"{new_attachment.original_filename}" '
                     f'a la tarea "{task.title}".'
                 ),
@@ -193,6 +153,7 @@ def upload_new_attachment(
         )
 
     return new_attachment
+
 
 def get_attachment_by_id(
     db: Session,
@@ -216,6 +177,7 @@ def get_attachment_by_id(
 
     return attachment
 
+
 def get_task_attachments(
     db: Session,
     task_id: int,
@@ -238,6 +200,7 @@ def get_task_attachments(
         task_id,
     )
 
+
 def remove_attachment(
     db: Session,
     attachment_id: int,
@@ -259,9 +222,7 @@ def remove_attachment(
     )
 
     if board is None:
-        raise ValueError(
-            "Board not found."
-        )
+        raise ValueError("Board not found.")
 
     require_project_role(
         db=db,
@@ -282,7 +243,7 @@ def remove_attachment(
             entity_type="attachment",
             entity_id=attachment.id,
             description=(
-                f'{current_user.username} eliminó el archivo '
+                f"{current_user.username} eliminó el archivo "
                 f'"{attachment.original_filename}" '
                 f'de la tarea "{task.title}"'
             ),
@@ -290,17 +251,14 @@ def remove_attachment(
         ),
     )
 
-    if (
-        task.assigned_to_id is not None
-        and task.assigned_to_id != current_user.id
-    ):
+    if task.assigned_to_id is not None and task.assigned_to_id != current_user.id:
         notify(
             db=db,
             notification=NotificationCreate(
                 type=NotificationType.ATTACHMENT_DELETED,
                 title="Archivo adjunto eliminado",
                 message=(
-                    f'{current_user.username} eliminó el archivo '
+                    f"{current_user.username} eliminó el archivo "
                     f'"{attachment.original_filename}" '
                     f'de la tarea "{task.title}".'
                 ),

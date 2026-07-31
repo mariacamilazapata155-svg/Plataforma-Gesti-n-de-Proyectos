@@ -1,47 +1,26 @@
 from sqlalchemy.orm import Session
 
 from app.models.project_member import ProjectMember
-from app.schemas.project_member_schema import (
-    ProjectMemberCreate,
-    ProjectMemberUpdate,
-)
+from app.schemas.project_member_schema import ProjectMemberCreate, ProjectMemberUpdate
 
 
-def get_project_member(
-    db: Session,
-    member_id: int
-):
+def get_project_member(db: Session, member_id: int):
     """
     Obtiene una membresía por su ID.
     """
 
-    return (
-        db.query(ProjectMember)
-        .filter(ProjectMember.id == member_id)
-        .first()
-    )
+    return db.query(ProjectMember).filter(ProjectMember.id == member_id).first()
 
 
-def get_project_members(
-    db: Session,
-    project_id: int
-):
+def get_project_members(db: Session, project_id: int):
     """
     Obtiene todos los miembros de un proyecto.
     """
 
-    return (
-        db.query(ProjectMember)
-        .filter(ProjectMember.project_id == project_id)
-        .all()
-    )
+    return db.query(ProjectMember).filter(ProjectMember.project_id == project_id).all()
 
 
-def get_user_membership(
-    db: Session,
-    project_id: int,
-    user_id: int
-):
+def get_user_membership(db: Session, project_id: int, user_id: int):
     """
     Obtiene la membresía de un usuario
     dentro de un proyecto.
@@ -50,18 +29,13 @@ def get_user_membership(
     return (
         db.query(ProjectMember)
         .filter(
-            ProjectMember.project_id == project_id,
-            ProjectMember.user_id == user_id
+            ProjectMember.project_id == project_id, ProjectMember.user_id == user_id
         )
         .first()
     )
 
 
-def create_project_member(
-    db: Session,
-    project_id: int,
-    member: ProjectMemberCreate
-):
+def create_project_member(db: Session, project_id: int, member: ProjectMemberCreate):
     """
     Agrega un usuario al proyecto.
     """
@@ -79,33 +53,20 @@ def create_project_member(
     return db_member
 
 
-def update_project_member(
-    db: Session,
-    member_id: int,
-    member: ProjectMemberUpdate
-):
+def update_project_member(db: Session, member_id: int, member: ProjectMemberUpdate):
     """
     Actualiza el rol de un miembro.
     """
 
-    db_member = get_project_member(
-        db,
-        member_id
-    )
+    db_member = get_project_member(db, member_id)
 
     if not db_member:
         return None
 
-    update_data = member.model_dump(
-        exclude_unset=True
-    )
+    update_data = member.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
-        setattr(
-            db_member,
-            key,
-            value
-        )
+        setattr(db_member, key, value)
 
     db.commit()
     db.refresh(db_member)
@@ -113,18 +74,12 @@ def update_project_member(
     return db_member
 
 
-def delete_project_member(
-    db: Session,
-    member_id: int
-):
+def delete_project_member(db: Session, member_id: int):
     """
     Elimina un miembro del proyecto.
     """
 
-    db_member = get_project_member(
-        db,
-        member_id
-    )
+    db_member = get_project_member(db, member_id)
 
     if not db_member:
         return None

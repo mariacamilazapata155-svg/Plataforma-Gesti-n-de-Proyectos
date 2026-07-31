@@ -28,9 +28,7 @@ def create_user(db: Session, user: UserCreate, hashed_password: str):
     """Crea un nuevo usuario."""
 
     db_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=hashed_password
+        username=user.username, email=user.email, hashed_password=hashed_password
     )
 
     db.add(db_user)

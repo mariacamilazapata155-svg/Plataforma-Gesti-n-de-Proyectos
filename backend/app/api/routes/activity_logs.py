@@ -1,31 +1,19 @@
 from typing import List
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-)
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
+from app.core.permissions_project_member import require_project_role
 from app.db.session import get_db
-
-from app.schemas.activity_log_schema import (
-    ActivityLogResponse,
-)
-
+from app.enums.project_role import ProjectRole
+from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogResponse
 from app.services.activity_log_service import (
     get_activity_by_id,
     get_project_activity,
     get_user_activity,
 )
-
-from app.models.user import User
-
-from app.core.dependencies import get_current_user
-from app.core.permissions_project_member import require_project_role
-from app.enums.project_role import ProjectRole
 
 router = APIRouter(
     prefix="/activity-logs",

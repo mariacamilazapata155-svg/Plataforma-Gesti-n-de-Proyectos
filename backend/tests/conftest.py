@@ -1,42 +1,33 @@
-import pytest
 import os
 
+import pytest
 from fastapi.testclient import TestClient
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 import app.db.base_imports as _  # noqa: F401
-
-from app.main import app
-
+from app.core.security import create_access_token, hash_password
 from app.db.base import Base
 from app.db.session import get_db
-
-from app.core.security import (
-    create_access_token,
-    hash_password,
-)
-
-from app.models.user import User
+from app.enums.activity_action import ActivityAction
+from app.enums.notification_type import NotificationType
+from app.enums.project_role import ProjectRole
+from app.main import app
+from app.models.activity_log import ActivityLog
+from app.models.attachment import Attachment
+from app.models.board import Board
+from app.models.comment import Comment
+from app.models.notification import Notification
 from app.models.project import Project
 from app.models.project_member import ProjectMember
-from app.models.board import Board
 from app.models.task import Task
-from app.models.comment import Comment
-from app.models.attachment import Attachment
-from app.models.activity_log import ActivityLog
-from app.models.notification import Notification
-
-from app.enums.project_role import ProjectRole
-from app.enums.notification_type import NotificationType
-from app.enums.activity_action import ActivityAction
-
+from app.models.user import User
 
 # --------------------------------------------------
 # DATABASE
 # --------------------------------------------------
+
 
 @pytest.fixture()
 def db_session():
@@ -72,6 +63,7 @@ def db_session():
 # CLIENT
 # --------------------------------------------------
 
+
 @pytest.fixture()
 def client(db_session):
 
@@ -90,35 +82,31 @@ def client(db_session):
 # USERS
 # --------------------------------------------------
 
+
 @pytest.fixture()
 def users(db_session):
 
     created_users = {
-
         "owner": User(
             username="owner",
             email="owner@example.com",
             hashed_password=hash_password("password"),
         ),
-
         "member": User(
             username="member",
             email="member@example.com",
             hashed_password=hash_password("password"),
         ),
-
         "viewer": User(
             username="viewer",
             email="viewer@example.com",
             hashed_password=hash_password("password"),
         ),
-
         "other_member": User(
             username="other_member",
             email="other_member@example.com",
             hashed_password=hash_password("password"),
         ),
-
         "outsider": User(
             username="outsider",
             email="outsider@example.com",
@@ -138,6 +126,7 @@ def users(db_session):
 # --------------------------------------------------
 # AUTH HEADERS
 # --------------------------------------------------
+
 
 def auth_headers(user: User):
 
@@ -177,6 +166,7 @@ def anonymous_headers():
 # AUTHORIZATION DATA
 # --------------------------------------------------
 
+
 @pytest.fixture()
 def authorization_data(
     db_session,
@@ -197,10 +187,12 @@ def authorization_data(
         owner_id=users["outsider"].id,
     )
 
-    db_session.add_all([
-        project,
-        private_project,
-    ])
+    db_session.add_all(
+        [
+            project,
+            private_project,
+        ]
+    )
 
     db_session.flush()
 
@@ -238,13 +230,15 @@ def authorization_data(
         role=ProjectRole.OWNER,
     )
 
-    db_session.add_all([
-        owner_membership,
-        member_membership,
-        viewer_membership,
-        other_member_membership,
-        outsider_membership,
-    ])
+    db_session.add_all(
+        [
+            owner_membership,
+            member_membership,
+            viewer_membership,
+            other_member_membership,
+            outsider_membership,
+        ]
+    )
 
     db_session.flush()
 
@@ -264,10 +258,12 @@ def authorization_data(
         owner_id=users["outsider"].id,
     )
 
-    db_session.add_all([
-        board,
-        private_board,
-    ])
+    db_session.add_all(
+        [
+            board,
+            private_board,
+        ]
+    )
 
     db_session.flush()
 
@@ -319,13 +315,10 @@ def authorization_data(
     return {
         "project": project,
         "private_project": private_project,
-
         "board": board,
         "private_board": private_board,
-
         "task": task,
         "comment": comment,
-
         "owner_membership": owner_membership,
         "member_membership": member_membership,
         "viewer_membership": viewer_membership,
@@ -333,9 +326,11 @@ def authorization_data(
         "outsider_membership": outsider_membership,
     }
 
+
 # --------------------------------------------------
 # ATTACHMENTS
 # --------------------------------------------------
+
 
 @pytest.fixture()
 def attachment_fixture(
@@ -373,6 +368,7 @@ def attachment_fixture(
 # ACTIVITY LOGS
 # --------------------------------------------------
 
+
 @pytest.fixture()
 def activity_log_fixture(
     db_session,
@@ -381,17 +377,11 @@ def activity_log_fixture(
 ):
 
     log = ActivityLog(
-
         action=ActivityAction.PROJECT_CREATED,
-
         entity_type="project",
-
         entity_id=authorization_data["project"].id,
-
         description="Proyecto creado",
-
         user_id=users["owner"].id,
-
         project_id=authorization_data["project"].id,
     )
 
@@ -406,6 +396,7 @@ def activity_log_fixture(
 # NOTIFICATIONS
 # --------------------------------------------------
 
+
 @pytest.fixture()
 def notification_fixture(
     db_session,
@@ -414,21 +405,13 @@ def notification_fixture(
 ):
 
     notification = Notification(
-
         type=NotificationType.TASK_ASSIGNED,
-
         title="Nueva tarea",
-
         message="Se te asignó una tarea.",
-
         entity_type="task",
-
         entity_id=authorization_data["task"].id,
-
         recipient_id=users["member"].id,
-
         sender_id=users["owner"].id,
-
         project_id=authorization_data["project"].id,
     )
 

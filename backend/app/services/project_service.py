@@ -2,57 +2,24 @@ from sqlalchemy.orm import Session
 
 from app.crud.crud_project import (
     create_project,
+    delete_project,
     get_project,
     get_projects,
-    get_projects_by_owner,
     get_projects_for_user,
     update_project,
-    delete_project,
 )
-
-from app.crud.crud_project_member import (
-    create_project_member,
-    get_project_members,
-)
-
-from app.schemas.project_schema import (
-    ProjectCreate,
-    ProjectUpdate,
-)
-
-from app.schemas.project_member_schema import (
-    ProjectMemberCreate,
-)
-
-from app.enums.project_role import (
-    ProjectRole,
-)
-
-from app.services.activity_log_service import (
-    log_activity,
-)
-
-from app.schemas.activity_log_schema import (
-    ActivityLogCreate,
-)
-
-from app.enums.activity_action import (
-    ActivityAction,
-)
-
-from app.services.notification_service import (
-    notify,
-)
-
-from app.schemas.notification_schema import (
-    NotificationCreate,
-)
-
-from app.enums.notification_type import (
-    NotificationType,
-)
-
+from app.crud.crud_project_member import create_project_member, get_project_members
+from app.enums.activity_action import ActivityAction
+from app.enums.notification_type import NotificationType
+from app.enums.project_role import ProjectRole
 from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogCreate
+from app.schemas.notification_schema import NotificationCreate
+from app.schemas.project_member_schema import ProjectMemberCreate
+from app.schemas.project_schema import ProjectCreate, ProjectUpdate
+from app.services.activity_log_service import log_activity
+from app.services.notification_service import notify
+
 
 def create_new_project(
     db: Session,
@@ -88,8 +55,7 @@ def create_new_project(
             entity_type="project",
             entity_id=new_project.id,
             description=(
-                f'{current_user.username} creó el proyecto '
-                f'"{new_project.title}"'
+                f"{current_user.username} creó el proyecto " f'"{new_project.title}"'
             ),
             project_id=new_project.id,
         ),
@@ -97,10 +63,8 @@ def create_new_project(
 
     return new_project
 
-def get_project_by_id(
-    db: Session,
-    project_id: int
-):
+
+def get_project_by_id(db: Session, project_id: int):
     return get_project(db, project_id)
 
 
@@ -138,7 +102,7 @@ def update_existing_project(
             entity_type="project",
             entity_id=updated_project.id,
             description=(
-                f'{current_user.username} actualizó el proyecto '
+                f"{current_user.username} actualizó el proyecto "
                 f'"{updated_project.title}"'
             ),
             project_id=updated_project.id,
@@ -161,7 +125,7 @@ def update_existing_project(
                 type=NotificationType.PROJECT_UPDATED,
                 title="Proyecto actualizado",
                 message=(
-                    f'{current_user.username} actualizó el proyecto '
+                    f"{current_user.username} actualizó el proyecto "
                     f'"{updated_project.title}".'
                 ),
                 entity_type="project",
@@ -196,8 +160,7 @@ def remove_project(
             entity_type="project",
             entity_id=project.id,
             description=(
-                f'{current_user.username} eliminó el proyecto '
-                f'"{project.title}"'
+                f"{current_user.username} eliminó el proyecto " f'"{project.title}"'
             ),
             project_id=project.id,
         ),

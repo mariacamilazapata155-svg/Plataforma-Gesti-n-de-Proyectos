@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.models.task import Task
 from app.models.board import Board
 from app.models.project_member import ProjectMember
+from app.models.task import Task
 from app.schemas.task_schema import TaskCreate, TaskUpdate
 
 
@@ -39,7 +39,7 @@ def create_task(db: Session, task: TaskCreate):
         title=task.title,
         description=task.description,
         board_id=task.board_id,
-        priority=task.priority
+        priority=task.priority,
     )
 
     db.add(db_task)
@@ -49,11 +49,7 @@ def create_task(db: Session, task: TaskCreate):
     return db_task
 
 
-def update_task(
-    db: Session,
-    task_id: int,
-    task: TaskUpdate
-):
+def update_task(db: Session, task_id: int, task: TaskUpdate):
     """Actualiza una tarea."""
 
     db_task = get_task(db, task_id)
@@ -84,6 +80,7 @@ def delete_task(db: Session, task_id: int):
     db.commit()
 
     return db_task
+
 
 def assign_task(
     db: Session,

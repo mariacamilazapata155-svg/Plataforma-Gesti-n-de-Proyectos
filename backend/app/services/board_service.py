@@ -1,52 +1,26 @@
 from sqlalchemy.orm import Session
 
+from app.core.permissions_project_member import require_project_role
 from app.crud.crud_board import (
     create_board,
+    delete_board,
     get_board,
-    get_boards,
     get_boards_by_project,
     get_boards_for_user,
     update_board,
-    delete_board,
 )
-
-from app.schemas.board_schema import BoardCreate, BoardUpdate
-
-from app.models.user import User
 from app.crud.crud_project import get_project
-from app.core.permissions_project_member import (
-    require_project_role,
-)
-
+from app.crud.crud_project_member import get_project_members
+from app.enums.activity_action import ActivityAction
+from app.enums.notification_type import NotificationType
 from app.enums.project_role import ProjectRole
+from app.models.user import User
+from app.schemas.activity_log_schema import ActivityLogCreate
+from app.schemas.board_schema import BoardCreate, BoardUpdate
+from app.schemas.notification_schema import NotificationCreate
+from app.services.activity_log_service import log_activity
+from app.services.notification_service import notify
 
-from app.services.activity_log_service import (
-    log_activity,
-)
-
-from app.schemas.activity_log_schema import (
-    ActivityLogCreate,
-)
-
-from app.enums.activity_action import (
-    ActivityAction,
-)
-
-from app.crud.crud_project_member import (
-    get_project_members,
-)
-
-from app.services.notification_service import (
-    notify,
-)
-
-from app.schemas.notification_schema import (
-    NotificationCreate,
-)
-
-from app.enums.notification_type import (
-    NotificationType,
-)
 
 def create_new_board(
     db: Session,
@@ -60,9 +34,7 @@ def create_new_board(
     )
 
     if not project:
-        raise ValueError(
-            "Project not found."
-        )
+        raise ValueError("Project not found.")
 
     require_project_role(
         db=db,
@@ -89,8 +61,7 @@ def create_new_board(
             entity_type="board",
             entity_id=new_board.id,
             description=(
-                f'{current_user.username} creó el tablero '
-                f'"{new_board.title}"'
+                f"{current_user.username} creó el tablero " f'"{new_board.title}"'
             ),
             project_id=new_board.project_id,
         ),
@@ -112,8 +83,7 @@ def create_new_board(
                 type=NotificationType.BOARD_CREATED,
                 title="Nuevo tablero",
                 message=(
-                    f'{current_user.username} creó el tablero '
-                    f'"{new_board.title}".'
+                    f"{current_user.username} creó el tablero " f'"{new_board.title}".'
                 ),
                 entity_type="board",
                 entity_id=new_board.id,
@@ -180,6 +150,7 @@ def get_boards_of_project(
         project_id,
     )
 
+
 def update_existing_board(
     db: Session,
     board_id: int,
@@ -215,7 +186,7 @@ def update_existing_board(
             entity_type="board",
             entity_id=updated_board.id,
             description=(
-                f'{current_user.username} actualizó el tablero '
+                f"{current_user.username} actualizó el tablero "
                 f'"{updated_board.title}"'
             ),
             project_id=updated_board.project_id,
@@ -238,7 +209,7 @@ def update_existing_board(
                 type=NotificationType.BOARD_UPDATED,
                 title="Tablero actualizado",
                 message=(
-                    f'{current_user.username} actualizó el tablero '
+                    f"{current_user.username} actualizó el tablero "
                     f'"{updated_board.title}".'
                 ),
                 entity_type="board",
@@ -280,8 +251,7 @@ def remove_board(
             entity_type="board",
             entity_id=board.id,
             description=(
-                f'{current_user.username} eliminó el tablero '
-                f'"{board.title}"'
+                f"{current_user.username} eliminó el tablero " f'"{board.title}"'
             ),
             project_id=board.project_id,
         ),
