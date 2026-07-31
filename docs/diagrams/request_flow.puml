@@ -1,0 +1,32 @@
+@startuml
+title Flujo de una Petición HTTP
+
+actor Usuario
+
+participant "FastAPI Router" as Router
+participant "Dependencies\nJWT + Permissions" as Dep
+participant "Service" as Service
+participant "CRUD" as Crud
+database "PostgreSQL" as DB
+
+Usuario -> Router : HTTP Request
+
+Router -> Dep : Validar JWT
+
+Dep --> Router : Usuario autenticado
+
+Router -> Service : Ejecutar lógica
+
+Service -> Crud : Consultar / Modificar datos
+
+Crud -> DB : SQL
+
+DB --> Crud : Resultado
+
+Crud --> Service
+
+Service --> Router
+
+Router --> Usuario : HTTP Response
+
+@enduml

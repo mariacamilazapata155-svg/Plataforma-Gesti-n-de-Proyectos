@@ -1,0 +1,36 @@
+@startuml
+title Creación de una tarea
+
+actor Usuario
+
+participant "Task Router" as Router
+participant "Task Service" as Service
+participant "Task CRUD" as CRUD
+participant "Activity Service" as Activity
+participant "Notification Service" as Notify
+database PostgreSQL
+
+Usuario -> Router : POST /tasks
+
+Router -> Service : create_task()
+
+Service -> CRUD : Guardar tarea
+
+CRUD -> PostgreSQL : INSERT Task
+PostgreSQL --> CRUD : Nueva tarea
+
+CRUD --> Service : Task
+
+Service -> Activity : Registrar actividad
+
+Activity -> PostgreSQL : INSERT ActivityLog
+
+Service -> Notify : Crear notificación
+
+Notify -> PostgreSQL : INSERT Notification
+
+Service --> Router : Task creada
+
+Router --> Usuario : 201 Created
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+title Flujo de Autorización (RBAC)
+
+start
+
+:Usuario realiza petición;
+
+:Validar JWT;
+
+if (Token válido?) then (Sí)
+
+    :Obtener usuario;
+
+    :Buscar ProjectMember;
+
+    if (¿Pertenece al proyecto?) then (Sí)
+
+        :Comparar rol requerido;
+
+        if (Rol permitido?) then (Sí)
+
+            :Ejecutar operación;
+
+            :HTTP 200 / 201;
+
+        else (No)
+
+            :HTTP 403 Forbidden;
+
+        endif
+
+    else (No)
+
+        :HTTP 403 Forbidden;
+
+    endif
+
+else (No)
+
+    :HTTP 401 Unauthorized;
+
+endif
+
+stop
+
+@enduml

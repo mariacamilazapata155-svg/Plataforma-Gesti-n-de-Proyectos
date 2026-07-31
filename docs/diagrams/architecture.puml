@@ -1,0 +1,32 @@
+@startuml
+title Arquitectura General del Backend
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+actor Cliente
+
+package "FastAPI Backend" {
+
+    component "Routers\n(API Endpoints)" as Router
+
+    component "Services\n(Business Logic)" as Service
+
+    component "CRUD\n(Data Access)" as Crud
+
+    component "SQLAlchemy Models" as Models
+
+    database "PostgreSQL" as DB
+}
+
+Cliente --> Router
+
+Router --> Service
+
+Service --> Crud
+
+Crud --> Models
+
+Models --> DB
+
+@enduml

@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Documentation
+    url: https://github.com/TU_USUARIO/TU_REPOSITORIO
+    about: Consulta primero la documentación del proyecto.

@@ -1,0 +1,34 @@
+@startuml
+title Inicio de sesión (JWT)
+
+actor Usuario
+
+participant "Auth Router" as Router
+participant "Auth Service" as Service
+participant "User CRUD" as CRUD
+database PostgreSQL
+participant "JWT"
+
+Usuario -> Router : POST /auth/login
+
+Router -> Service : authenticate_user()
+
+Service -> CRUD : Buscar usuario
+
+CRUD -> PostgreSQL : SELECT User
+
+PostgreSQL --> CRUD : Usuario
+
+CRUD --> Service : Usuario
+
+Service -> Service : Verificar contraseña
+
+Service -> JWT : Crear Access Token
+
+JWT --> Service : JWT
+
+Service --> Router : Token
+
+Router --> Usuario : 200 OK\nAccess Token
+
+@enduml

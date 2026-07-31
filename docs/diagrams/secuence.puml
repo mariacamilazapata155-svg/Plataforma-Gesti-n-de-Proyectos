@@ -1,0 +1,33 @@
+@startuml
+title Secuencia de una petición autenticada
+
+actor Cliente
+
+participant "FastAPI Router" as Router
+participant "Dependency\n(get_current_user)" as Auth
+participant "Service Layer" as Service
+participant "CRUD Layer" as CRUD
+database PostgreSQL
+
+Cliente -> Router : HTTP Request\nAuthorization: Bearer JWT
+
+Router -> Auth : Validar JWT
+Auth -> PostgreSQL : Buscar usuario
+PostgreSQL --> Auth : Usuario
+Auth --> Router : current_user
+
+Router -> Service : Ejecutar lógica
+
+Service -> CRUD : Consultar / Crear / Actualizar
+
+CRUD -> PostgreSQL : SQL Query
+
+PostgreSQL --> CRUD : Datos
+
+CRUD --> Service : Resultado
+
+Service --> Router : Respuesta
+
+Router --> Cliente : JSON Response
+
+@enduml

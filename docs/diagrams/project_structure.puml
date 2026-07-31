@@ -1,0 +1,53 @@
+@startuml Project_Structure
+title Estructura del Proyecto
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+folder "backend" {
+
+    folder "alembic"
+
+    folder "app" {
+
+        package "core"
+
+        package "crud"
+
+        package "db"
+
+        package "enums"
+
+        package "models"
+
+        package "routers"
+
+        package "schemas"
+
+        package "services"
+
+        file "main.py"
+
+        file "config.py"
+
+    }
+
+    folder "tests"
+
+    folder "uploads"
+
+    folder "docs"
+
+    file "requirements.txt"
+
+    file "README.md"
+
+    file "CHANGELOG.md"
+
+    file "CONTRIBUTING.md"
+
+    file "LICENSE"
+
+}
+
+@enduml

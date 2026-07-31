@@ -1,0 +1,104 @@
+@startuml Database_Diagram
+title Modelo de Base de Datos
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+entity "users" as User {
+    * id : int
+    --
+    username
+    email
+    password_hash
+}
+
+entity "projects" as Project {
+    * id : int
+    --
+    title
+    description
+    status
+    owner_id
+}
+
+entity "project_members" as Member {
+    * id : int
+    --
+    project_id
+    user_id
+    role
+}
+
+entity "boards" as Board {
+    * id : int
+    --
+    title
+    project_id
+}
+
+entity "tasks" as Task {
+    * id : int
+    --
+    title
+    description
+    status
+    board_id
+    assigned_to_id
+}
+
+entity "comments" as Comment {
+    * id : int
+    --
+    content
+    task_id
+    user_id
+}
+
+entity "attachments" as Attachment {
+    * id : int
+    --
+    filename
+    task_id
+    uploaded_by
+}
+
+entity "notifications" as Notification {
+    * id : int
+    --
+    recipient_id
+    sender_id
+    project_id
+}
+
+entity "activity_logs" as Activity {
+    * id : int
+    --
+    action
+    project_id
+    user_id
+}
+
+User ||--o{ Project : owns
+User ||--o{ Member
+Project ||--o{ Member
+
+Project ||--o{ Board
+Board ||--o{ Task
+
+Task ||--o{ Comment
+User ||--o{ Comment
+
+Task ||--o{ Attachment
+User ||--o{ Attachment
+
+User ||--o{ Notification : recipient
+User ||--o{ Notification : sender
+
+Project ||--o{ Notification
+
+Project ||--o{ Activity
+User ||--o{ Activity
+
+@enduml
