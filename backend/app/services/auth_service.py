@@ -55,5 +55,5 @@ def login_user(db: Session, email: str, password: str):
 
     return {
         "access_token": access_token,
-        "token_type": "bearer",
+        "token_type": "bearer",  # nosec B105
     }
